@@ -406,7 +406,7 @@ export default function PhysicsDemo() {
         <Canvas
           camera={{ position: [12, 9, 14], fov: 52 }}
           dpr={[1, 1.8]}
-          shadows
+          shadows={{ type: THREE.PCFShadowMap }}
           onCreated={({ camera }) => {
             camera.lookAt(0, 2.2, 0);
           }}

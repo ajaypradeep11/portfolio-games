@@ -3,6 +3,7 @@
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import styles from "@/app/page.module.css";
 
@@ -212,14 +213,7 @@ function CameraRig({
   controlsRef,
 }: {
   cameraPreset: CameraPreset;
-  controlsRef: MutableRefObject<
-    | {
-        object: THREE.Camera;
-        target: THREE.Vector3;
-        update: () => void;
-      }
-    | null
-  >;
+  controlsRef: MutableRefObject<OrbitControlsImpl | null>;
 }) {
   const { camera } = useThree();
 
@@ -250,14 +244,7 @@ function SceneController({
   aimRef: MutableRefObject<AimState>;
   keysRef: MutableRefObject<Record<string, boolean>>;
   projectilesRef: MutableRefObject<Projectile[]>;
-  controlsRef: MutableRefObject<
-    | {
-        object: THREE.Camera;
-        target: THREE.Vector3;
-        update: () => void;
-      }
-    | null
-  >;
+  controlsRef: MutableRefObject<OrbitControlsImpl | null>;
   cameraPreset: CameraPreset;
   onAimSync: (aim: AimState) => void;
   onProjectilesSync: (projectiles: Projectile[]) => void;
@@ -508,11 +495,7 @@ export default function TicTacToeDemo() {
   const projectilesRef = useRef<Projectile[]>([]);
   const boardRef = useRef<Array<Player | null>>(Array(9).fill(null));
   const winnerRef = useRef<Winner>(null);
-  const controlsRef = useRef<{
-    object: THREE.Camera;
-    target: THREE.Vector3;
-    update: () => void;
-  } | null>(null);
+  const controlsRef = useRef<OrbitControlsImpl | null>(null);
 
   const [aimDisplay, setAimDisplay] = useState(DEFAULT_AIM);
   const [board, setBoard] = useState<Array<Player | null>>(Array(9).fill(null));
