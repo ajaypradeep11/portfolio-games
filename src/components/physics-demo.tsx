@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Sky, Stars } from "@react-three/drei";
 import { CuboidCollider, Physics, RigidBody, type RapierRigidBody } from "@react-three/rapier";
 import * as THREE from "three";
+import GameInputPad from "@/components/game-input-pad";
 import styles from "@/app/page.module.css";
 
 type AimState = {
@@ -421,49 +422,31 @@ export default function PhysicsDemo() {
         </Canvas>
       </div>
 
-      <section className={styles.panel}>
-        <div className={styles.panelHeader}>
-          <div>
-            <p className={styles.panelLabel}>Live controls</p>
-            <h2>Cannon telemetry</h2>
+      <section className={`${styles.panel} ${styles.physicsPanel}`}>
+        <div className={`${styles.panelHeader} ${styles.physicsPanelHeader}`}>
+          <div className={styles.physicsTitleBlock}>
+            <h2 className={styles.physicsTitle}>Cannon telemetry</h2>
           </div>
-          <button className={styles.resetButton} type="button" onClick={resetSession}>
+          <button className={`${styles.resetButton} ${styles.physicsAction}`} type="button" onClick={resetSession}>
             Reset
           </button>
         </div>
 
-        <div className={styles.statsGrid}>
+        <div className={`${styles.statsGrid} ${styles.physicsStatsGrid}`}>
           {stats.map((stat) => (
-            <div key={stat.label} className={styles.statCard}>
+            <div key={stat.label} className={`${styles.statCard} ${styles.physicsStatCard}`}>
               <span>{stat.label}</span>
               <strong>{stat.value}</strong>
             </div>
           ))}
         </div>
 
-        <div className={styles.keyGroup}>
-          <div className={styles.keyRow}>
-            <kbd>W</kbd>
-            <kbd>A</kbd>
-            <kbd>S</kbd>
-            <kbd>D</kbd>
-            <span>or arrow keys to aim</span>
-          </div>
-          <div className={styles.keyRow}>
-            <kbd>Space</kbd>
-            <kbd>Enter</kbd>
-            <span>fire a shot</span>
-          </div>
-          <div className={styles.keyRow}>
-            <kbd>R</kbd>
-            <span>clear the arena</span>
-          </div>
-          <div className={styles.keyRow}>
-            <kbd>Drag</kbd>
-            <span>orbit the camera</span>
-          </div>
-        </div>
+        <p className={`${styles.panelNote} ${styles.physicsHint}`}>
+          WASD aim · Space fire · R clear · Drag orbit
+        </p>
       </section>
+
+      <GameInputPad keysRef={keysRef} onShoot={fireProjectile} />
     </div>
   );
 }

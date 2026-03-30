@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Stars } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
+import GameInputPad from "@/components/game-input-pad";
 import styles from "@/app/page.module.css";
 
 type Player = "X" | "O";
@@ -502,7 +503,6 @@ export default function TicTacToeDemo() {
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>(() => readStoredCameraPreset() ?? DEFAULT_CAMERA_PRESET);
   const [currentPlayer, setCurrentPlayer] = useState<Player>("X");
   const [winner, setWinner] = useState<Winner>(null);
-  const [shotsFired, setShotsFired] = useState(0);
   const [projectiles, setProjectiles] = useState<Projectile[]>([]);
 
   useEffect(() => {
@@ -529,7 +529,6 @@ export default function TicTacToeDemo() {
     startTransition(() => {
       setBoard(emptyBoard);
       setProjectiles([]);
-      setShotsFired(0);
     });
   }, []);
 
@@ -597,7 +596,6 @@ export default function TicTacToeDemo() {
 
     startTransition(() => {
       setProjectiles((current) => [...current, nextProjectile]);
-      setShotsFired((value) => value + 1);
     });
   }, [currentPlayer]);
 
@@ -634,15 +632,12 @@ export default function TicTacToeDemo() {
     };
   }, [fireShot, resetGame]);
 
-  const filledCount = board.filter(Boolean).length;
   const stats = useMemo(
     () => [
       { label: "Turn", value: currentPlayer },
       { label: "State", value: winnerLabel(winner) },
-      { label: "Filled", value: `${filledCount}/9` },
-      { label: "Shots", value: shotsFired.toString().padStart(2, "0") },
     ],
-    [currentPlayer, filledCount, shotsFired, winner],
+    [currentPlayer, winner],
   );
 
   const aimSummary = `${Math.round(THREE.MathUtils.radToDeg(aimDisplay.pitch))}deg pitch / ${Math.round(THREE.MathUtils.radToDeg(aimDisplay.yaw))}deg yaw`;
@@ -679,25 +674,29 @@ export default function TicTacToeDemo() {
         </Canvas>
       </div>
 
-      <section className={styles.panel}>
-        <div className={styles.panelHeader}>
-          <div>
-            <p className={styles.panelLabel}>Final Project Remake</p>
-            <h2>Tic-Tac-Toe Range</h2>
+      <section className={`${styles.panel} ${styles.tictactoePanel}`}>
+        <div className={`${styles.panelHeader} ${styles.tictactoePanelHeader}`}>
+          <div className={styles.tictactoeTitleBlock}>
+            <h2 className={styles.tictactoeTitle}>Tic-Tac-Toe</h2>
           </div>
-          <div className={styles.panelActions}>
-            <button className={styles.resetButton} type="button" onClick={saveCurrentView}>
-              Save View
+          <div className={`${styles.panelActions} ${styles.tictactoePanelActions}`}>
+            <button
+              aria-label="Save current camera view"
+              className={`${styles.resetButton} ${styles.tictactoeAction}`}
+              type="button"
+              onClick={saveCurrentView}
+            >
+              Save
             </button>
-            <button className={styles.resetButton} type="button" onClick={resetGame}>
+            <button className={`${styles.resetButton} ${styles.tictactoeAction}`} type="button" onClick={resetGame}>
               Reset
             </button>
           </div>
         </div>
 
-        <div className={styles.statsGrid}>
+        <div className={`${styles.statsGrid} ${styles.tictactoeStatsGrid}`}>
           {stats.map((stat) => (
-            <div key={stat.label} className={styles.statCard}>
+            <div key={stat.label} className={`${styles.statCard} ${styles.tictactoeStatCard}`}>
               <span>{stat.label}</span>
               <strong
                 className={
@@ -720,35 +719,12 @@ export default function TicTacToeDemo() {
           ))}
         </div>
 
-        <p className={styles.panelNote}>
-          Turn only changes when a shot actually lands in an empty square, just like the original prototype. Aim:
-          {" "}
-          {aimSummary}
+        <p className={`${styles.panelNote} ${styles.tictactoeHint}`}>
+          Aim {aimSummary} · WASD aim · Space fire · R reset
         </p>
-
-        <div className={styles.keyGroup}>
-          <div className={styles.keyRow}>
-            <kbd>W</kbd>
-            <kbd>A</kbd>
-            <kbd>S</kbd>
-            <kbd>D</kbd>
-            <span>or arrow keys to aim</span>
-          </div>
-          <div className={styles.keyRow}>
-            <kbd>Space</kbd>
-            <kbd>Enter</kbd>
-            <span>fire the current mark</span>
-          </div>
-          <div className={styles.keyRow}>
-            <kbd>R</kbd>
-            <span>restart the board</span>
-          </div>
-          <div className={styles.keyRow}>
-            <kbd>Drag</kbd>
-            <span>orbit the camera</span>
-          </div>
-        </div>
       </section>
+
+      <GameInputPad keysRef={keysRef} onShoot={fireShot} />
     </div>
   );
 }
